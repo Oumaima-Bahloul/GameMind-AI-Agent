@@ -41,7 +41,7 @@ GameMind is an elite, full-stack autonomous AI assistant specialized in video ga
 * A Groq API key (Get one from the [Groq Console](https://console.groq.com/)).
 
 ### 1. Clone the Repository
-git clone [https://github.com/your-username/GameMind-Agent.git](https://github.com/your-username/GameMind-Agent.git)
+git clone [https://github.com/Oumaima-Bahloul/GameMind-Agent.git](https://github.com/your-username/GameMind-Agent.git)
 cd GameMind-Agent
 
 ### 2. Configure the Backend Server
