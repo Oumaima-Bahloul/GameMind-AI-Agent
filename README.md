@@ -1,5 +1,5 @@
 # GameMind-AI-Agent
-GameMind is an elite, full-stack autonomous AI assistant specialized in video games. Powered by **Groq** and the **LLaMA 3.3 70B** model, it uses multi-turn tool orchestration to fetch real-time game updates and compute complex metrics like hardware bottlenecks. The application also supports advanced multimodal capabilities, allowing users to upload images (screenshots) and process heavy PDF documents safely via an in-memory extraction pipeline with hard truncation guards.
+GameMind is an elite, full-stack autonomous AI assistant specialized in video games. Powered by **Groq** and the **LLaMA 3.3 70B** model, it uses multi-turn tool orchestration to fetch real-time game updates and compute complex metrics like hardware bottlenecks. The application also supports advanced multimodal capabilities, allowing users to upload images  and process heavy PDF documents safely via an in-memory extraction pipeline with hard truncation guards.
 
 ---
 
@@ -8,7 +8,7 @@ GameMind is an elite, full-stack autonomous AI assistant specialized in video ga
 * **Autonomous Tool Orchestration:** Dynamically switches between conversational replies and execution of specialized Python tools (`get_game_latest_news`, `calculate_pc_bottleneck`).
 * **Multimodal Input Support:** * **Vision Matrix:** Seamlessly handles image uploads by dynamically switching to the `meta-llama/llama-4-scout-17b-16e-instruct` model.
   * **PDF Guardrail Reader:** Parses PDFs in-memory with a hard string-character limit (20,000 characters) to prevent token overflow.
-* **Localized Multi-Lingual Architecture:** Automatically detects user language and adapts response formatting structures dynamically (English, French, Arabic, etc.).
+* **Localized Multi-Lingual Architecture:** Automatically detects user language and adapts response formatting structures dynamically (English, French, Arabic).
 * **Advanced UI Workspace:** A modern, customizable web interface featuring three distinct styles (Dark, Light, Neon), persistent chat histories inside `localStorage`, and real-time typewriter content streaming.
 
 ---
