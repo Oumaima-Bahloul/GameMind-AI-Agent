@@ -1,0 +1,1029 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GameMind — AI Gaming Agent</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0a0f;
+        --surface: #12121a;
+        --card: #1a1a28;
+        --border: #2a2a40;
+        --accent: #7c3aed;
+        --accent-l: #a78bfa;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --user-bg: #7c3aed;
+        --bot-bg: #1e3a5f;
+        --danger: #ef4444;
+        --sidebar-w: 260px;
+      }
+      .theme-light {
+        --bg: #f0f0ff;
+        --surface: #ffffff;
+        --card: #f8f8ff;
+        --border: #ddd6fe;
+        --accent: #6d28d9;
+        --accent-l: #7c3aed;
+        --text: #1e1b4b;
+        --muted: #6b7280;
+        --user-bg: #6d28d9;
+        --bot-bg: #dbeafe;
+      }
+      .theme-neon {
+        --bg: #000;
+        --surface: #0d0d0d;
+        --card: #111;
+        --border: #00ff88;
+        --accent: #00ff88;
+        --accent-l: #00ffcc;
+        --text: #fff;
+        --muted: #888;
+        --user-bg: #ff0080;
+        --bot-bg: #001a11;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        height: 100%;
+      }
+      body {
+        font-family: "Rajdhani", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        transition:
+          background 0.3s,
+          color 0.3s;
+        overflow: hidden;
+      }
+
+      /* Layout Grid Wrapper */
+      .app-container {
+        display: flex;
+        flex: 1;
+        min-height: 0;
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      /* Header */
+      header {
+        background: var(--surface);
+        border-bottom: 2px solid var(--border);
+        padding: 0 20px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        z-index: 10;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-l));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+      }
+      .logo-title {
+        font-family: "Orbitron", monospace;
+        font-size: 18px;
+        font-weight: 900;
+        color: var(--accent-l);
+        letter-spacing: 2px;
+        line-height: 1;
+      }
+      .logo-sub {
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 1px;
+      }
+      .header-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .theme-switcher {
+        display: flex;
+        gap: 6px;
+        background: var(--card);
+        padding: 4px 6px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+      }
+      .theme-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color 0.2s;
+      }
+      .theme-btn.active {
+        border-color: var(--accent);
+      }
+
+      /* Sidebar Styles */
+      aside {
+        width: var(--sidebar-w);
+        background: var(--surface);
+        border-right: 2px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        min-height: 0;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+      }
+      .sidebar-header {
+        padding: 16px;
+        border-bottom: 1px solid var(--border);
+      }
+      .btn-new-chat {
+        width: 100%;
+        padding: 12px;
+        background: transparent;
+        border: 2px dashed var(--accent);
+        color: var(--accent-l);
+        border-radius: 10px;
+        cursor: pointer;
+        font-family: "Orbitron", sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+      }
+      .btn-new-chat:hover {
+        background: rgba(124, 58, 237, 0.1);
+        border-style: solid;
+        box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+      }
+      .history-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .history-item {
+        width: 100%;
+        padding: 10px 12px;
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--text);
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 600;
+        font-size: 14px;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        transition: all 0.2s;
+      }
+      .history-item:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: var(--border);
+      }
+      .history-item.active {
+        background: var(--card);
+        border-color: var(--accent);
+        color: var(--accent-l);
+      }
+      .chat-title-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1;
+      }
+      .btn-delete-chat {
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 14px;
+        display: none;
+      }
+      .history-item:hover .btn-delete-chat {
+        display: block;
+      }
+      .btn-delete-chat:hover {
+        color: var(--danger);
+      }
+
+      /* Main Chat Window Context */
+      main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg);
+        min-height: 0;
+        min-width: 0;
+        overflow: hidden;
+      }
+
+      /* Capability bar */
+      .cap-bar {
+        background: var(--card);
+        border-bottom: 1px solid var(--border);
+        padding: 8px 20px;
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        flex-shrink: 0;
+      }
+      .cap {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--muted);
+        white-space: nowrap;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      /* Chat container area */
+      #chat {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        overscroll-behavior: contain;
+      }
+      .msg-wrap {
+        display: flex;
+        margin-bottom: 16px;
+        animation: fadeSlide 0.3s ease;
+      }
+      .msg-wrap.user {
+        justify-content: flex-end;
+      }
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, var(--accent), var(--accent-l));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        margin-right: 10px;
+      }
+      .bubble {
+        max-width: 75%;
+        padding: 12px 16px;
+        font-size: 14px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .msg-wrap.user .bubble {
+        background: linear-gradient(135deg, var(--user-bg), var(--accent-l));
+        color: #fff;
+        border-radius: 20px 20px 4px 20px;
+      }
+      .msg-wrap.bot .bubble {
+        background: var(--bot-bg);
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 20px 20px 20px 4px;
+      }
+      .file-tag {
+        margin-top: 8px;
+        padding: 5px 10px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        font-size: 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      /* Typing dots */
+      .typing {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 0;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+      .dot:nth-child(1) {
+        animation: bounce 1.2s 0s infinite;
+      }
+      .dot:nth-child(2) {
+        animation: bounce 1.2s 0.2s infinite;
+      }
+      .dot:nth-child(3) {
+        animation: bounce 1.2s 0.4s infinite;
+      }
+
+      /* Bottom bar wrapper — always stays pinned */
+      .bottom-bar {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Examples */
+      #examples {
+        padding: 0 20px 12px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        flex-shrink: 0;
+      }
+      .example-btn {
+        padding: 6px 14px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 12px;
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 600;
+        transition: all 0.2s;
+      }
+      .example-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent-l);
+      }
+
+      /* File preview */
+      #file-preview {
+        margin: 0 20px 8px;
+        padding: 8px 14px;
+        background: var(--card);
+        border: 1px solid var(--accent);
+        border-radius: 10px;
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+        color: var(--accent-l);
+        flex-shrink: 0;
+      }
+      #file-preview.show {
+        display: flex;
+      }
+      #file-preview button {
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 1;
+      }
+
+      /* Input Layout */
+      .input-area {
+        padding: 12px 20px 20px;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+      .input-box {
+        display: flex;
+        gap: 10px;
+        align-items: flex-end;
+        background: var(--card);
+        border: 2px solid var(--border);
+        border-radius: 16px;
+        padding: 10px 14px;
+        transition: border-color 0.3s;
+      }
+      .input-box:focus-within {
+        border-color: var(--accent);
+      }
+      .icon-btn {
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 20px;
+        padding: 0;
+        flex-shrink: 0;
+        transition: color 0.2s;
+        line-height: 1;
+      }
+      .icon-btn:hover {
+        color: var(--accent-l);
+      }
+      #msg-input {
+        flex: 1;
+        background: none;
+        border: none;
+        outline: none;
+        color: var(--text);
+        font-size: 14px;
+        font-family: "Rajdhani", sans-serif;
+        font-weight: 500;
+        resize: none;
+        line-height: 1.5;
+        max-height: 120px;
+        overflow-y: auto;
+      }
+      #msg-input::placeholder {
+        color: var(--muted);
+      }
+      #send-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-l));
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+        transition: all 0.2s;
+      }
+      #send-btn:disabled {
+        background: var(--border);
+        cursor: not-allowed;
+      }
+      .input-hint {
+        text-align: center;
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 8px;
+        letter-spacing: 0.5px;
+      }
+
+      @keyframes fadeSlide {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes bounce {
+        0%,
+        80%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-8px);
+        }
+      }
+      #chat::-webkit-scrollbar,
+      .history-list::-webkit-scrollbar {
+        width: 6px;
+      }
+      #chat::-webkit-scrollbar-thumb,
+      .history-list::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <div class="logo-icon">🕹️</div>
+        <div>
+          <div class="logo-title">GAMEMIND</div>
+          <div class="logo-sub">
+            AUTONOMOUS AI GAMING AGENT · POWERED BY GROQ + LLAMA 3
+          </div>
+        </div>
+      </div>
+      <div class="header-controls">
+        <div class="theme-switcher">
+          <button
+            class="theme-btn active"
+            data-theme=""
+            title="Dark"
+            style="background: #0a0a0f"
+          >
+            🌙
+          </button>
+          <button
+            class="theme-btn"
+            data-theme="theme-light"
+            title="Light"
+            style="background: #f0f0ff"
+          >
+            ☀️
+          </button>
+          <button
+            class="theme-btn"
+            data-theme="theme-neon"
+            title="Neon"
+            style="background: #000"
+          >
+            ⚡
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="app-container">
+      <aside>
+        <div class="sidebar-header">
+          <button class="btn-new-chat" onclick="createNewChat()">
+            <span>+</span> NEW CHAT
+          </button>
+        </div>
+        <div class="history-list" id="history-list"></div>
+      </aside>
+
+      <main>
+        <div class="cap-bar">
+          <div class="cap"><span>🧠</span> Multi-step Reasoning</div>
+          <div class="cap"><span>🦙</span> LLaMA 3.3 70B</div>
+          <div class="cap"><span>📋</span> Action Planning</div>
+          <div class="cap"><span>📎</span> Image & PDF Upload</div>
+        </div>
+
+        <div id="chat"></div>
+
+        <div class="bottom-bar">
+          <div id="examples">
+            <button class="example-btn" onclick="fillInput(this)">
+              Best RPGs of 2024?
+            </button>
+            <button class="example-btn" onclick="fillInput(this)">
+              How to beat Elden Ring final boss?
+            </button>
+            <button class="example-btn" onclick="fillInput(this)">
+              Gaming PC build under $800
+            </button>
+            <button class="example-btn" onclick="fillInput(this)">
+              League of Legends current meta?
+            </button>
+          </div>
+
+          <div id="file-preview" id="file-preview-container">
+            <div style="display: flex; align-items: center; gap: 10px">
+              <img
+                id="preview-img"
+                src=""
+                alt="preview"
+                style="
+                  display: none;
+                  width: 32px;
+                  height: 32px;
+                  object-fit: cover;
+                  border-radius: 6px;
+                  border: 1px solid var(--border);
+                "
+              />
+              <span
+                id="preview-name"
+                style="
+                  font-size: 13px;
+                  color: var(--accent-l);
+                  white-space: nowrap;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  max-width: 180px;
+                "
+              ></span>
+            </div>
+            <button onclick="clearFile()">×</button>
+          </div>
+
+          <div class="input-area">
+            <div class="input-box">
+              <input
+                type="file"
+                id="file-input"
+                accept="image/*,application/pdf"
+                style="display: none"
+                onchange="handleFileSelect(event)"
+              />
+              <button
+                class="icon-btn"
+                onclick="document.getElementById('file-input').click()"
+                title="Upload image/PDF"
+              >
+                📎
+              </button>
+              <textarea
+                id="msg-input"
+                rows="1"
+                placeholder="Ask GameMind anything about video games..."
+                oninput="autoResize(this)"
+                onkeydown="handleKey(event)"
+              ></textarea>
+              <button id="send-btn" onclick="sendMessage()">▶</button>
+            </div>
+            <div class="input-hint">
+              ENTER to send · SHIFT+ENTER for new line · Upload screenshots or
+              PDF documents
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const BACKEND = "http://localhost:5000";
+
+      /* Multi-Chat Management System */
+      let chats = JSON.parse(localStorage.getItem("gamemind_chats")) || {};
+      let activeChatId = localStorage.getItem("gamemind_active_id") || null;
+
+      let pendingFile = null;
+      let isLoading = false;
+
+      // Theme toggle configuration
+      document.querySelectorAll(".theme-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".theme-btn")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          document.body.className = btn.dataset.theme;
+        });
+      });
+
+      // Handle setup on first launch
+      window.onload = () => {
+        if (Object.keys(chats).length === 0 || !activeChatId) {
+          createNewChat();
+        } else {
+          renderSidebar();
+          switchChat(activeChatId);
+        }
+      };
+
+      function saveToLocalStorage() {
+        localStorage.setItem("gamemind_chats", JSON.stringify(chats));
+        localStorage.setItem("gamemind_active_id", activeChatId);
+      }
+
+      function createNewChat() {
+        const id = "chat_" + Date.now();
+        chats[id] = {
+          title: "New Session",
+          history: [],
+        };
+        activeChatId = id;
+        saveToLocalStorage();
+        renderSidebar();
+        switchChat(id);
+      }
+
+      function switchChat(id) {
+        if (!chats[id]) return;
+        activeChatId = id;
+        localStorage.setItem("gamemind_active_id", id);
+
+        // Update styling highlights
+        document.querySelectorAll(".history-item").forEach((item) => {
+          item.classList.toggle("active", item.dataset.id === id);
+        });
+
+        // Re-render chat workspace panel
+        const chatWindow = document.getElementById("chat");
+        chatWindow.innerHTML = "";
+
+        const activeHistory = chats[id].history;
+
+        if (activeHistory.length === 0) {
+          document.getElementById("examples").style.display = "flex";
+          addWelcomeMessage();
+        } else {
+          document.getElementById("examples").style.display = "none";
+          activeHistory.forEach((msg) => {
+            if (msg.role === "user") {
+              // Extract clean string view if message was text-only vs visual array struct
+              const viewText =
+                typeof msg.content === "string"
+                  ? msg.content
+                  : "[Analyzing context]";
+              appendUserElement(viewText);
+            } else if (msg.role === "assistant") {
+              appendBotElement(msg.content);
+            }
+          });
+        }
+        scrollBottom();
+      }
+
+      function deleteChat(id, event) {
+        event.stopPropagation(); // Avoid executing active switch on node activation
+        delete chats[id];
+
+        const remainingKeys = Object.keys(chats);
+        if (remainingKeys.length === 0) {
+          activeChatId = null;
+          createNewChat();
+        } else {
+          if (activeChatId === id) {
+            activeChatId = remainingKeys[0];
+          }
+          saveToLocalStorage();
+          renderSidebar();
+          switchChat(activeChatId);
+        }
+      }
+
+      function renderSidebar() {
+        const list = document.getElementById("history-list");
+        list.innerHTML = "";
+
+        // Render chronological history items (newest entries first)
+        Object.keys(chats)
+          .reverse()
+          .forEach((id) => {
+            const chat = chats[id];
+            const item = document.createElement("button");
+            item.className = `history-item ${id === activeChatId ? "active" : ""}`;
+            item.dataset.id = id;
+            item.onclick = () => switchChat(id);
+
+            item.innerHTML = `
+            <span class="chat-title-text">${chat.title}</span>
+            <button class="btn-delete-chat" onclick="deleteChat('${id}', event)">×</button>
+          `;
+            list.appendChild(item);
+          });
+      }
+
+      function addWelcomeMessage() {
+        appendBotElement(
+          "🎮 Welcome to **GameMind** — your autonomous AI gaming agent!\n\n" +
+            "Powered by **Groq + LLaMA 3.3 70B**.\n\n" +
+            "What gaming challenge can I solve for you today?",
+        );
+      }
+
+      function autoResize(el) {
+        el.style.height = "auto";
+        el.style.height = Math.min(el.scrollHeight, 120) + "px";
+      }
+
+      function handleKey(e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      }
+
+      function fillInput(btn) {
+        document.getElementById("msg-input").value = btn.textContent;
+        document.getElementById("msg-input").focus();
+      }
+
+      function scrollBottom() {
+        const chat = document.getElementById("chat");
+        chat.scrollTop = chat.scrollHeight;
+      }
+      function renderMarkdown(text) {
+        return text
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\*(.*?)\*/g, "<em>$1</em>")
+          .replace(
+            /`(.*?)`/g,
+            "<code style='background:rgba(124,58,237,.2);padding:2px 6px;border-radius:4px;font-family:monospace;'>$1</code>",
+          )
+          .replace(/\n/g, "<br>"); // Permet de conserver les sauts de lignes structurels du plan de l'agent
+      }
+
+      function handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        pendingFile = file;
+        const previewContainer = document.getElementById("file-preview");
+        const previewImg = document.getElementById("preview-img");
+        const fileNameSpan = document.getElementById("preview-name");
+
+        previewContainer.classList.add("show");
+        fileNameSpan.textContent = "📎 " + file.name;
+
+        if (file.type.startsWith("image/")) {
+          const reader = new FileReader();
+          reader.onload = function (evt) {
+            previewImg.src = evt.target.result;
+            previewImg.style.display = "block";
+          };
+          reader.readAsDataURL(file);
+        } else if (file.type === "application/pdf") {
+          previewImg.src =
+            "https://cdn-icons-png.flaticon.com/512/337/337946.png";
+          previewImg.style.display = "block";
+        }
+      }
+
+      function clearFile() {
+        pendingFile = null;
+        document.getElementById("file-input").value = "";
+        document.getElementById("file-preview").classList.remove("show");
+        const previewImg = document.getElementById("preview-img");
+        previewImg.style.display = "none";
+        previewImg.src = "";
+        document.getElementById("preview-name").textContent = "";
+      }
+
+      function appendUserElement(text, fileName) {
+        document.getElementById("examples").style.display = "none";
+        const chat = document.getElementById("chat");
+        const wrap = document.createElement("div");
+        wrap.className = "msg-wrap user";
+        wrap.innerHTML = `<div class="bubble">${renderMarkdown(text)}${fileName ? `<div class="file-tag">📎 ${fileName}</div>` : ""}</div>`;
+        chat.appendChild(wrap);
+        scrollBottom();
+      }
+
+      function appendBotElement(text) {
+        const chat = document.getElementById("chat");
+        const wrap = document.createElement("div");
+        wrap.className = "msg-wrap bot";
+        wrap.innerHTML = `<div class="avatar">🎮</div><div class="bubble">${renderMarkdown(text)}</div>`;
+        chat.appendChild(wrap);
+        scrollBottom();
+      }
+
+      function showTyping() {
+        const chat = document.getElementById("chat");
+        const wrap = document.createElement("div");
+        wrap.className = "msg-wrap bot";
+        wrap.id = "typing-indicator";
+        wrap.innerHTML = `
+          <div class="avatar">🎮</div>
+          <div class="bubble">
+            <div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          </div>`;
+        chat.appendChild(wrap);
+        scrollBottom();
+      }
+
+      function removeTyping() {
+        const el = document.getElementById("typing-indicator");
+        if (el) el.remove();
+      }
+
+      function streamText(fullText) {
+        const chat = document.getElementById("chat");
+        const wrap = document.createElement("div");
+        wrap.className = "msg-wrap bot";
+        const content = document.createElement("span");
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.appendChild(content);
+        const avatar = document.createElement("div");
+        avatar.className = "avatar";
+        avatar.textContent = "🎮";
+        wrap.appendChild(avatar);
+        wrap.appendChild(bubble);
+        chat.appendChild(wrap);
+
+        let i = 0;
+        const iv = setInterval(() => {
+          i += 8;
+          content.innerHTML = renderMarkdown(fullText.slice(0, i));
+          scrollBottom();
+          if (i >= fullText.length) {
+            content.innerHTML = renderMarkdown(fullText);
+            clearInterval(iv);
+          }
+        }, 16);
+      }
+
+      function readFileAsBase64(file) {
+        return new Promise((res, rej) => {
+          const reader = new FileReader();
+          reader.onload = () =>
+            res({ data: reader.result.split(",")[1], media_type: file.type });
+          reader.onerror = rej;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function sendMessage() {
+        if (isLoading) return;
+
+        // 1. FIXED: Correctly targeted your actual text element 'msg-input'
+        const inputEl = document.getElementById("msg-input");
+        const text = inputEl.value.trim();
+
+        // Block execution if there's no text written and no file attached
+        if (!text && !pendingFile) return;
+
+        isLoading = true;
+        document.getElementById("send-btn").disabled = true;
+        inputEl.value = "";
+
+        // 2. FIXED: Changed adjustTextAreaHeight to your native autoResize function
+        autoResize(inputEl);
+
+        // 3. Process and convert the file into Base64 format if one is pending
+        let filePayload = null;
+        let attachedFileName = null;
+
+        if (pendingFile) {
+          attachedFileName = pendingFile.name;
+          const fileResult = await readFileAsBase64(pendingFile);
+
+          // Package it cleanly matching the structure your backend Flask server expects
+          filePayload = {
+            media_type: pendingFile.type || "application/pdf",
+            data: fileResult.data, // Reads the extracted data field from your helper
+          };
+          clearFile(); // Clear file preview state variable from layout
+        }
+
+        // 4. FIXED: Changed appendUserMessage to your native appendUserElement function
+        appendUserElement(text, attachedFileName);
+
+        // Fetch the active chat session record list
+        const chatHistory = chats[activeChatId].history;
+
+        // Dynamically name the chat session if it's the very first message
+        if (chatHistory.length === 0 && text) {
+          chats[activeChatId].title =
+            text.length > 22 ? text.slice(0, 22) + "..." : text;
+          renderSidebar();
+        }
+
+        // 5. Record the user message to your localized history
+        chatHistory.push({ role: "user", content: text });
+        saveToLocalStorage();
+
+        showTyping(); // Trigger your loading indicator dots
+
+        // 6. Send payload package over to our Flask endpoint interface
+        try {
+          const body = { messages: chatHistory };
+          if (filePayload) {
+            body.file = filePayload; // Appends the file payload map object onto your request body
+          }
+
+          const res = await fetch(`${BACKEND}/api/chat`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+
+          const data = await res.json();
+          removeTyping();
+
+          if (data.error) {
+            appendBotElement("⚠️ Error: " + data.error);
+          } else {
+            streamText(data.response); // Execute typewriter streaming animation
+            chatHistory.push({ role: "assistant", content: data.response });
+            saveToLocalStorage();
+          }
+        } catch (err) {
+          removeTyping();
+          appendBotElement("⚠️ Cannot connect to backend server framework.");
+        }
+
+        isLoading = false;
+        document.getElementById("send-btn").disabled = false;
+      }
+    </script>
+  </body>
+</html>
