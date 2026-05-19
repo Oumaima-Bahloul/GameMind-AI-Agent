@@ -41,6 +41,17 @@ GameMind is an elite, full-stack autonomous AI assistant specialized in video ga
 * A Groq API key (Get one from the [Groq Console](https://console.groq.com/)).
 
 ### 1. Clone the Repository
-```bash
 git clone [https://github.com/your-username/GameMind-Agent.git](https://github.com/your-username/GameMind-Agent.git)
 cd GameMind-Agent
+
+### 2. Configure the Backend Server
+Navigate to your backend files directory and install the necessary Python dependencies:
+pip install flask flask-cors groq pypdf
+
+ 
+### 3. Set up your Groq API authentication key in your operating system environment variables:
+Linux/macOS:  export GROQ_API_KEY="your_actual_groq_api_key_here"
+Windows (Command Prompt): set GROQ_API_KEY=your_actual_groq_api_key_here
+Windows (PowerShell): PowerShell $env:GROQ_API_KEY="your_actual_groq_api_key_here"
+
+Run the Flask application:python app.py
